@@ -41,6 +41,29 @@ def main():
         {"from": account}
     )
     borrow_tx.wait(1)
+    print("We borrowed some DAI!")
+    get_borrowable_data(lending_pool, account)
+    print("Repaying all...")
+    repay_all(amount, lending_pool, account)
+    print("We just used Aave, Chainlink, and Brownie to deposit, borrow, and repay assets!")
+
+def repay_all(amount, lending_pool, account):
+    # first we have to approve ERC20
+    approve_erc20(
+        Web3.toWei(amount, "ether"),
+        lending_pool,
+        config["networks"][network.show_active()]["dai_token"],
+        account,
+    )
+    repay_tx = lending_pool.repay(
+        config["networks"][network.show_active()]["dai_token"],
+        amount,
+        1,
+        account.address,
+        {"from": account},
+    )
+    repay_tx.wait(1)
+    print("Rapaid!")
 
 def get_asset_price(price_feed_address):
     # ABI
@@ -76,7 +99,7 @@ def approve_erc20(amount, spender, erc20_address, account):
     erc20 = interface.IERC20(erc20_address)
     tx = erc20.approve(spender, amount, {"from": account})
     tx.wait(1)
-    print("Approved")
+    print("Approved ERC20")
     return tx
 
 def get_lending_pool():
