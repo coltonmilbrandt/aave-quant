@@ -1,4 +1,8 @@
-from scripts.helpful_scripts import get_account
+from scripts.helpful_scripts import (
+    get_account,
+    LOCAL_BLOCKCHAIN_ENVIRONMENTS,
+    FORKED_LOCAL_ENVIRONMENTS,
+)
 from brownie import interface, config, network
 
 def main():
@@ -15,4 +19,5 @@ def get_weth():
     tx = weth.deposit({"from": account, "value": 0.01 * 10 ** 18})
     tx.wait(1)
     print(f"Received 0.1 WETH")
-    # return tx
+    if network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS or network.show_active() in FORKED_LOCAL_ENVIRONMENTS:
+        return tx
